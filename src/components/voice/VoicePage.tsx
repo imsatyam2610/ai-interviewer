@@ -90,7 +90,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
     sayQuestion,
     setTranscript,
   } = useVapi({
-    onFirstMessage: `Hi! I'm your AI Interviewer. Let's begin your ${data?.company} mock interview.`,
+    onFirstMessage: `Hi! I'm your Interviewer today from ${data?.company} . Let's begin your ${data?.company} mock interview.`,
     getCurrentQuestion: () => currentQuestion?.text || null,
     onSkipQuestion: skipQuestion,
   });
@@ -127,6 +127,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
         message: "Interview Ended",
         description: "Thank you for completing the interview.",
       });
+      router.push("/voice/" + data.interview_id + "/result");
     } catch (error) {
       console.error("Failed to end interview:", error);
     }
@@ -200,14 +201,15 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
       <div className="max-w-4xl mx-auto space-y-6">
         <InterviewStatus company={data.company} isConnected={isConnected} />
 
-        {currentQuestion && (
+        {/* {currentQuestion && (
           <QuestionViewer
             questionText={currentQuestion.text}
             currentIndex={interviewState.currentQuestionIndex}
             totalQuestions={interviewState.questions.length}
           />
-        )}
+        )} */}
         <VoiceControls
+          company={data.company}
           isInterviewActive={isConnected}
           activeUser={activeUser}
           submitAnswer={submitAnswer}

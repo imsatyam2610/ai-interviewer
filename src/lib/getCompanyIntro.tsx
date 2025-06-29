@@ -1,8 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY!,
-});
+import { generateFromGemini } from "@/config/gemini";
 
 export default async function getCompanyIntro(
   company: string
@@ -12,25 +8,7 @@ export default async function getCompanyIntro(
 Mention what kind of questions the candidate might expect, such as coding, system design, leadership principles, etc. 
 Keep it concise and friendly in 2-3 sentences.`;
 
-    const model = "gemini-2.0-flash";
-
-    const result = await ai.models.generateContentStream({
-      model,
-      config: {
-        responseMimeType: "text/plain",
-      },
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }],
-        },
-      ],
-    });
-
-    let output = "";
-    for await (const chunk of result) {
-      output += chunk.text;
-    }
+    const output = await generateFromGemini({ prompt: prompt });
 
     return output.trim() || `Welcome to your mock interview at ${company}.`;
   } catch (error) {

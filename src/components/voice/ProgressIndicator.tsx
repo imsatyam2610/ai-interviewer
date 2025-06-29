@@ -36,7 +36,7 @@ const ProgressIndicator: React.FC<Props> = ({
   return (
     <>
       {/* Floating Control Bar */}
-      <div className="fixed bottom-0.5 left-1/2 -translate-x-1/2 z-50 w-full sm:max-w-80 max-w-60 px-2">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full sm:max-w-80 max-w-60 px-2">
         <div className="bg-white/80 shadow-xl border border-gray-200 rounded-full flex justify-around items-center py-2 sm:px-6">
           {/* Mute / Unmute */}
           <button
@@ -103,7 +103,7 @@ const ProgressIndicator: React.FC<Props> = ({
       </div>
 
       {/* Progress Bar at Top or Inline */}
-      <div className="w-full max-w-2xl mx-auto mt-2">
+      {/* <div className="w-full max-w-2xl mx-auto mt-2">
         <div className="flex justify-between px-2 text-sm text-gray-500">
           <span>Progress</span>
           <span>
@@ -116,7 +116,7 @@ const ProgressIndicator: React.FC<Props> = ({
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

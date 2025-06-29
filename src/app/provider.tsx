@@ -1,5 +1,4 @@
 "use client";
-import Navbar from "@/components/landing/Navbar";
 import { CompanyProvider } from "@/lib/CompanyContext";
 import { UserDetailsContext } from "@/lib/UserContext";
 import { useUser } from "@clerk/nextjs";
@@ -38,10 +37,7 @@ function Provider({
   };
   return (
     <UserDetailsContext.Provider value={{ userDetail, setUserDetail }}>
-      <CompanyProvider>
-        <Navbar />
-        {children}
-      </CompanyProvider>
+      <CompanyProvider>{children}</CompanyProvider>
     </UserDetailsContext.Provider>
   );
 }
