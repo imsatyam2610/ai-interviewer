@@ -1,6 +1,7 @@
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 interface Props {}
 
@@ -18,10 +19,12 @@ const DashboardHeader: React.FC<Props> = ({}) => {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
+            <Link href="/dashboard/setting/">
+              <Button variant="outline" size="sm">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </Button>
+            </Link>
             <div className="flex items-center justify-center">
               <UserButton />
             </div>

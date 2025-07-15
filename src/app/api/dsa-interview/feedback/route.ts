@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { interviewId, code, language, timeSpent, testResults } = body;
-
+    console.log("code", code);
     const feedback = await generateDSAFeedback({
       code,
       language,

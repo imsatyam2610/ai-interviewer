@@ -15,11 +15,13 @@ interface FeedbackPageProps {
   showFeedback: boolean;
   mockFeedback: any;
   setShowFeedback: any;
+  handleInterviewStart: () => void;
 }
 export default function DSAResultSidebar({
   showFeedback,
   mockFeedback,
   setShowFeedback,
+  handleInterviewStart,
 }: FeedbackPageProps) {
   return (
     <div className="space-y-6">
@@ -154,16 +156,18 @@ export default function DSAResultSidebar({
           <CardTitle>Next Steps</CardTitle>
         </CardHeader>
         <CardContent>
-          <Link href="/dsa">
-            <Button className="w-full" variant="outline">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Try Another Problem
-            </Button>
-          </Link>
-          <Link href="/">
+          <Button
+            className="w-full cursor-pointer"
+            variant="outline"
+            onClick={handleInterviewStart}
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Try Another Problem
+          </Button>
+          <Link href="/dashboard">
             <Button className="w-full mt-4">
               <Home className="w-4 h-4 mr-2" />
-              Back to Lobby
+              Back to Dashboard
             </Button>
           </Link>
         </CardContent>

@@ -7,6 +7,7 @@ import ScoreOverview from "./ScoreOverview";
 import DSAResultHeader from "./Header";
 import DSAResultMain from "./MainContent";
 import DSAResultSidebar from "./Sidebar";
+import { useRouter } from "next/navigation";
 
 interface TestResult {
   id: number;
@@ -49,6 +50,7 @@ interface FeedbackPageProps {
   data: any;
 }
 export default function DSAResultPage({ data }: FeedbackPageProps) {
+  const router = useRouter();
   const mockFeedback: Feedback = data?.feedback;
   const performanceMetrics = data.performanceMetrics || [];
   const [results, setResults] = useState(false);
@@ -105,10 +107,48 @@ export default function DSAResultPage({ data }: FeedbackPageProps) {
   const passedTests = data.testResults.filter((t: any) => t.passed).length;
   const totalTests = data.testResults.length;
 
+  const handleInterviewStart = async () => {
+    try {
+      const res = await fetch("/api/dsa-interview", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+      if (data?.interviewId) {
+        router.push(`/dsa/${data.interviewId}`);
+      } else {
+        alert("Failed to create interview session.");
+      }
+    } catch (error) {
+      console.error("Failed to start DSA Interview:", error);
+    }
+  };
+
+  const handleDownload = () => {
+    const content = `📊 DSA Interview Result\nProblem: ${
+      data.problem.title
+    }\nScore: ${data.score}%\nTime Taken: ${formatTime(
+      data.timeSpent
+    )}\nThanks for using AI Interviewer!`;
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${data.problem.title}-result.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <DSAResultHeader mockProblem={data.problem.title} />
+      <DSAResultHeader
+        mockProblem={data.problem.title}
+        handleDownload={handleDownload}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Score Overview */}
@@ -135,6 +175,7 @@ export default function DSAResultPage({ data }: FeedbackPageProps) {
             showFeedback={showFeedback}
             mockFeedback={mockFeedback}
             setShowFeedback={setShowFeedback}
+            handleInterviewStart={handleInterviewStart}
           />
         </div>
       </div>

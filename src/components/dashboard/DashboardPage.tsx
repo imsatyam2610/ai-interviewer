@@ -142,7 +142,6 @@ export default function DashboardPage() {
       try {
         const res = await fetch("/api/interview/history?page=1&limit=3");
         const data = await res.json();
-        console.log("data", data);
         setRecentInterviews(data.data || []);
       } catch (err) {
         console.error("Failed to fetch recent interviews", err);

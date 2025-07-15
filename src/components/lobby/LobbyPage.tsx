@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import getCompanyIntro from "@/lib/getCompanyIntro";
 import { useCompany } from "@/lib/CompanyContext";
 import { UserDetailsContext } from "@/lib/UserContext";
+import Link from "next/link";
 
 export default function LobbyPage() {
   const { company } = useCompany();
@@ -122,12 +123,14 @@ export default function LobbyPage() {
           <p className="text-sm mt-3 text-red-500">
             You don't have credits to start the interview.
           </p>
-          <button
-            className="px-6 py-2 mt-2 rounded text-white bg-green-700 hover:bg-green-800"
-            onClick={() => router.push("/pricing")}
-          >
-            Upgrade Now
-          </button>
+          <Link href="/pricing">
+            <button
+              className="px-6 py-2 mt-2 rounded text-white bg-green-700 hover:bg-green-800"
+              onClick={() => router.push("/pricing")}
+            >
+              Upgrade Now
+            </button>
+          </Link>
         </>
       )}
     </div>
