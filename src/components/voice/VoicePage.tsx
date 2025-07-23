@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useVapi } from "@/hooks/useVapi";
-import { notification } from "antd";
 import InterviewStatus from "./InterviewStatus";
 import QuestionViewer from "./QuestionViewer";
 import TranscriptViewer from "./TranscriptViewer";
 import ProgressIndicator from "./ProgressIndicator";
 import VoiceControls from "./VoiceControls";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Question {
   id: string;
@@ -69,10 +69,10 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
       };
     });
 
-    notification.info({
-      message: "Question Skipped",
+    toast.info("Question Skipped", {
       description: "Moving to the next question.",
     });
+
     setTranscript("");
   }, []);
 
@@ -104,13 +104,11 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
   const startInterview = useCallback(async () => {
     try {
       await connect();
-      notification.success({
-        message: "Interview Started",
+      toast.success("Interview Started", {
         description: "You can now answer the questions using your voice.",
       });
     } catch (error) {
-      notification.error({
-        message: "Connection Failed",
+      toast.error("Connection Failed", {
         description: "Unable to connect to voice service. Please try again.",
       });
     }
@@ -123,10 +121,10 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
         ...prev,
         transcript: "",
       }));
-      notification.success({
-        message: "Interview Ended",
+      toast.success("Interview Ended", {
         description: "Thank you for completing the interview.",
       });
+
       router.push("/voice/" + data.interview_id + "/result");
     } catch (error) {
       console.error("Failed to end interview:", error);
@@ -135,10 +133,10 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
 
   const submitAnswer = useCallback(async () => {
     if (!interviewState.transcript.trim()) {
-      notification.warning({
-        message: "No Answer Detected",
+      toast.warning("No Answer Detected", {
         description: "Please provide an answer before submitting.",
       });
+
       return;
     }
 
@@ -160,16 +158,14 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
 
       const feedback = await response.json();
 
-      notification.success({
-        message: "Answer Submitted",
+      toast.success("Answer Submitted", {
         description: "Your answer has been recorded and analyzed.",
       });
 
       if (isLastQuestion) {
         await endInterview();
         router.push("/voice/" + data.interview_id + "/result");
-        notification.success({
-          message: "Interview Complete",
+        toast.success("Interview Complete", {
           description: "You have completed all questions. Thank you!",
         });
       } else {
@@ -182,8 +178,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
-      notification.error({
-        message: "Submission Failed",
+      toast.error("Submission Failed", {
         description: "Something went wrong. Please try again.",
       });
     } finally {

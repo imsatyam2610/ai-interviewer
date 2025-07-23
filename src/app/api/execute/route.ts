@@ -40,21 +40,66 @@ function wrapCode(
   language: string,
   functionName = "solution"
 ): string {
-  if (language.toLowerCase() !== "javascript") return userCode;
+  const lang = language.toLowerCase();
+  let inputStr = "";
 
-  let args = "";
-
-  if (typeof testInput === "object" && !Array.isArray(testInput)) {
-    args = Object.values(testInput)
-      .map((val) => JSON.stringify(val))
-      .join(", ");
-  } else if (Array.isArray(testInput)) {
-    args = testInput.map((val) => JSON.stringify(val)).join(", ");
+  if (typeof testInput === "object") {
+    inputStr = JSON.stringify(testInput);
   } else {
-    args = JSON.stringify(testInput);
+    inputStr = JSON.stringify(String(testInput));
   }
 
-  return `${userCode}\n\nconsole.log(${functionName}(${args}));`;
+  // JavaScript (Node.js)
+  if (lang === "javascript") {
+    return `${userCode}
+    
+console.log(${functionName}(${inputStr}));
+`;
+  }
+
+  // Python
+  if (lang === "python") {
+    return `${userCode}
+
+print(${functionName}(${inputStr}))
+`;
+  }
+
+  // C++
+  if (lang === "cpp") {
+    return `
+#include <iostream>
+#include <string>
+using namespace std;
+
+${userCode}
+
+int main() {
+    string input = ${JSON.stringify(testInput)};
+    cout << ${functionName}(input) << endl;
+    return 0;
+}
+`;
+  }
+
+  // Java
+  if (lang === "java") {
+    return `
+import java.util.*;
+
+public class Main {
+    public static int ${functionName}(String str) {
+        ${userCode}
+    }
+
+    public static void main(String[] args) {
+        System.out.println(${functionName}(${JSON.stringify(testInput)}));
+    }
+}
+`;
+  }
+
+  return userCode;
 }
 
 function normalizeOutput(output: string): any {
@@ -82,7 +127,8 @@ function compareOutputs(expected: string, actual: string): boolean {
     return expectedNorm === actualNorm;
   } catch {
     return (
-      expected.trim().replace(/\s+/g, "") === actual.trim().replace(/\s+/g, "")
+      expected?.toString().trim().replace(/\s+/g, "") ===
+      actual?.toString().trim().replace(/\s+/g, "")
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Card } from "antd";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface Props {
   questionText: string;
@@ -12,13 +12,15 @@ const QuestionViewer: React.FC<Props> = ({
   totalQuestions,
 }) => {
   return (
-    <Card
-      title={`Question ${currentIndex + 1} of ${totalQuestions}`}
-      style={{ marginBottom: 20 }}
-    >
-      <div className="space-y-1">
+    <Card className="mb-5">
+      <CardHeader>
+        <CardTitle>{`Question ${
+          currentIndex + 1
+        } of ${totalQuestions}`}</CardTitle>
+      </CardHeader>
+      <CardContent>
         <p className="text-lg font-medium text-gray-800">{questionText}</p>
-      </div>
+      </CardContent>
     </Card>
   );
 };

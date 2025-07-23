@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Home } from "lucide-react";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -20,6 +22,13 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <Link href="/dashboard">
+        <Button className="mb-6">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Dashboard
+        </Button>
+      </Link>
+
       <Tabs defaultValue="account" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="account">Account</TabsTrigger>
@@ -36,11 +45,14 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div>
                 <Label>Email</Label>
-                <Input value={user?.emailAddresses[0].emailAddress} disabled />
+                <Input
+                  value={user?.emailAddresses[0].emailAddress ?? ""}
+                  disabled
+                />
               </div>
               <div>
                 <Label>Full Name</Label>
-                <Input value={user?.fullName || ""} disabled />
+                <Input value={user?.fullName ?? ""} disabled />
               </div>
               <div>
                 <Label>Subscription</Label>

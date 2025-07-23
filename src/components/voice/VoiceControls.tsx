@@ -1,4 +1,5 @@
 import React from "react";
+import { useUser } from "@clerk/nextjs";
 
 interface VoiceControlsProps {
   company: string;
@@ -17,6 +18,8 @@ const VoiceControls: React.FC<VoiceControlsProps> = ({
   isProcessingAnswer,
   disableSubmit,
 }) => {
+  const { user } = useUser();
+
   return (
     <div className="bg-white p-4 rounded-xl text-center w-full max-w-4xl mx-auto mt-6">
       <div className="grid sm:grid-cols-2 gap-6 mb-6">
@@ -41,10 +44,12 @@ const VoiceControls: React.FC<VoiceControlsProps> = ({
           )}
           <img
             src="https://randomuser.me/api/portraits/men/1.jpg"
-            alt="Satyam"
+            alt="Your Profile"
             className="w-20 h-20 rounded-full mb-2 shadow"
           />
-          <h2 className="text-base font-medium text-gray-800">Satyam</h2>
+          <h2 className="text-base font-medium text-gray-800">
+            {user?.fullName ?? user?.emailAddresses[0].emailAddress ?? "You"}
+          </h2>
         </div>
       </div>
 

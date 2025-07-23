@@ -1,4 +1,4 @@
-import { Card } from "antd";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -30,42 +30,38 @@ const TranscriptViewer: React.FC<Props> = ({ conversationLog }) => {
       {/* Transcript Panel */}
       {isOpen && (
         <div className="fixed bottom-20 right-6 w-[320px] z-40">
-          <Card
-            title="Live Transcript"
-            size="small"
-            className="shadow-lg"
-            styles={{
-              body: {
-                padding: 12,
-              },
-            }}
-          >
-            <div
-              ref={containerRef}
-              className="min-h-[100px] max-h-[200px] overflow-y-auto bg-gray-100 p-3 rounded-lg space-y-2"
-            >
-              {conversationLog.length > 0 ? (
-                conversationLog.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`text-sm ${
-                      msg.role === "you"
-                        ? "text-right text-blue-800"
-                        : "text-left text-gray-800"
-                    }`}
-                  >
-                    <strong>
-                      {msg.role === "you" ? "You: " : "Interviewer: "}
-                    </strong>
-                    <span>{msg.text}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic text-center">
-                  Your conversation will appear here...
-                </p>
-              )}
-            </div>
+          <Card className="shadow-lg border border-gray-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Live Transcript</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <div
+                ref={containerRef}
+                className="min-h-[100px] max-h-[200px] overflow-y-auto bg-gray-100 p-3 rounded-lg space-y-2"
+              >
+                {conversationLog.length > 0 ? (
+                  conversationLog.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={`text-sm ${
+                        msg.role === "you"
+                          ? "text-right text-blue-800"
+                          : "text-left text-gray-800"
+                      }`}
+                    >
+                      <strong>
+                        {msg.role === "you" ? "You: " : "Interviewer: "}
+                      </strong>
+                      <span>{msg.text}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 italic text-center">
+                    Your conversation will appear here...
+                  </p>
+                )}
+              </div>
+            </CardContent>
           </Card>
         </div>
       )}

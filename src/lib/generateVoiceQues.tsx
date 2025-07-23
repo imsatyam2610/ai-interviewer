@@ -84,6 +84,7 @@ Make sure:
 
   const raw = await generateFromGemini({ prompt });
   try {
+    // console.log("raw", raw)
     const clean = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
     return parsed;
