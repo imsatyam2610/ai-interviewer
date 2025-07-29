@@ -14,6 +14,7 @@
     "@google/genai": "^1.5.1",
     "@monaco-editor/react": "^4.7.0",
     "@neondatabase/serverless": "^1.0.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
@@ -24,6 +25,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.517.0",
     "mime": "^4.0.7",
     "next": "15.3.3",
@@ -36,6 +38,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

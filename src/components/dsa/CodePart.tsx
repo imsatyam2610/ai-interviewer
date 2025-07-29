@@ -1,23 +1,33 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MonacoEditor from "./monaco-editor";
 import {
-  Brain,
   CheckCircle,
   Code,
   Loader2,
   RotateCcw,
   Terminal,
   XCircle,
-  Zap,
 } from "lucide-react";
+
+interface TestResult {
+  id: number | string;
+  input: string;
+  expectedOutput: string;
+  actualOutput?: string;
+  passed: boolean;
+  status?: string;
+  executionTime?: string;
+  memory?: string;
+}
 
 interface Props {
   testResults: any;
   executionOutput: string;
   isExecuting: boolean;
-  setCode: any;
-  setSelectedLanguage: any;
+  setCode: (val: string) => void;
+  setSelectedLanguage: (lang: string) => void;
   code: string;
   selectedLanguage: string;
   handleReset: () => void;
@@ -37,6 +47,19 @@ const CodePart: React.FC<Props> = ({
   handleRunCode,
   isRunning,
 }) => {
+  const [feedback, setFeedback] = useState<string>("");
+
+  const handleLiveAnalysis = async (code: string) => {
+    const res = await fetch("/api/dsa-interview/analysis", {
+      method: "POST",
+      body: JSON.stringify({ code }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const json = await res.json();
+    setFeedback(json.feedback || "");
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -64,17 +87,19 @@ const CodePart: React.FC<Props> = ({
             </div>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <MonacoEditor
             value={code}
             onChange={(value) => setCode(value || "")}
             language={selectedLanguage}
             height="300px"
+            onAnalyzeCode={handleLiveAnalysis}
           />
           <div className="flex gap-2 mt-4">
             <Button
               onClick={handleRunCode}
-              disabled={isExecuting || !isRunning}
+              disabled={isExecuting || isRunning}
               variant="outline"
               className="flex items-center gap-2"
             >
@@ -86,10 +111,15 @@ const CodePart: React.FC<Props> = ({
               {isExecuting ? "Running..." : "Run Code"}
             </Button>
           </div>
+
+          {feedback && (
+            <div className="mt-4 text-sm text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <strong>AI Feedback:</strong> {feedback}
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Execution Output */}
       {executionOutput && (
         <Card>
           <CardHeader>
@@ -99,14 +129,13 @@ const CodePart: React.FC<Props> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm">
+            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap">
               {executionOutput}
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Test Results */}
       {testResults.length > 0 && (
         <Card>
           <CardHeader>
@@ -114,7 +143,7 @@ const CodePart: React.FC<Props> = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {testResults.map((testCase: any) => (
+              {testResults.map((testCase: TestResult) => (
                 <div
                   key={testCase.id}
                   className="border border-gray-200 rounded-lg p-3"

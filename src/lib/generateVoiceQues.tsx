@@ -4,32 +4,36 @@ const getRandomCount = () => Math.floor(Math.random() * 4) + 5;
 
 export async function generateQuestions(company: string): Promise<string[]> {
   try {
-    const count = getRandomCount();
-
     const prompt = `
-You are an AI mock interviewer for the company "${company}", simulating a realistic fresher-level interview.
+You are a technical interviewer at "${company}" conducting a **mock CS/DSA interview**.
 
-Structure the flow like this:
+🚫 Strict Instructions:
+- Do NOT ask what kind of questions the candidate wants.
+- Do NOT include answers, hints, or explanations.
+- Do NOT format output as bullets, JSON, or numbers.
+
+✅ Structure of Interview:
 1. Greet the candidate.
-2. Ask them to briefly introduce themselves.
-3. Ask a mix of 5 to 7 beginner-level questions, covering:
-   - Computer Science fundamentals (e.g., OOP, DBMS)
-   - Data Structures & Algorithms (e.g., arrays, sorting)
-   - Basic behavioral/situational questions
-4. Do not ask overly complex or senior-level questions.
-5. Keep it conversational and formal — like a real human interviewer would sound.
+2. Ask for a brief self-introduction.
+3. Ask **1-2 HR or situational questions** (e.g., teamwork, strengths).
+4. Then ask **5–6 technical questions** focused ONLY on:
+   - Computer Science Fundamentals (OOP, DBMS, OS, CN, etc.)
+   - Data Structures and Algorithms (arrays, strings, sorting, recursion, etc.)
+5. In DSA questions:
+   - First, ask for brute force or initial approach.
+   - Then ask them to explain time and space complexity of their solution.
+   - Then (optional) ask how they would optimize it.
+6. Keep it **interactive**, **human-like**, and **conversational**.
+7. Output should be plain text. Each line = 1 sentence or question.
 
-IMPORTANT RULES:
-- Do NOT ask the candidate what type of questions to ask.
-- Use natural language. Keep each question short, clear, and on a new line.
-- Do NOT number the questions or include symbols.
-- Do NOT include explanations or answers. Only questions.
+🎯 Goal:
+Simulate the **natural flow of a real technical interview** with a human interviewer.
+DO NOT jump to answers. DO NOT say anything after asking the question.
 
-Now simulate the beginning of a mock interview at ${company}.
-Output only the greeting and the questions, one per line. No JSON, no bullets, no intro text.
+Now begin the interview. First greet the candidate. One question per line.
 `;
 
-    const output = await generateFromGemini({ prompt: prompt });
+    const output = await generateFromGemini({ prompt });
 
     const questions = output
       .trim()

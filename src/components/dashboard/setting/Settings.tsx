@@ -9,14 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Home } from "lucide-react";
+import { UserDetailsContext } from "@/lib/UserContext";
 
 export default function SettingsPage() {
   const { user } = useUser();
   const { signOut } = useClerk();
-
+  const { userDetail } = useContext(UserDetailsContext);
   const [aiLearning, setAiLearning] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -58,7 +59,9 @@ export default function SettingsPage() {
                 <Label>Subscription</Label>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">Free Plan</Badge>
-                  <p className="text-xs text-gray-500">2 interviews left</p>
+                  <p className="text-xs text-gray-500">
+                    {userDetail?.credits ?? ""} interviews left
+                  </p>
                 </div>
               </div>
               <Button variant="outline" onClick={() => signOut()}>

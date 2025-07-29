@@ -103,7 +103,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
 
   const startInterview = useCallback(async () => {
     try {
-      await connect();
+      await connect({ company: data?.company });
       toast.success("Interview Started", {
         description: "You can now answer the questions using your voice.",
       });
@@ -132,7 +132,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
   }, [disconnect]);
 
   const submitAnswer = useCallback(async () => {
-    if (!interviewState.transcript.trim()) {
+    if (conversationLog.length <= 0) {
       toast.warning("No Answer Detected", {
         description: "Please provide an answer before submitting.",
       });
@@ -148,9 +148,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           interviewId: data.interview_id,
-          questionId: currentQuestion.id,
-          answer: interviewState.transcript,
-          questionText: currentQuestion.text,
+          conversationLog,
         }),
       });
 
@@ -162,20 +160,17 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
         description: "Your answer has been recorded and analyzed.",
       });
 
-      if (isLastQuestion) {
-        await endInterview();
-        router.push("/voice/" + data.interview_id + "/result");
-        toast.success("Interview Complete", {
-          description: "You have completed all questions. Thank you!",
-        });
-      } else {
-        setInterviewState((prev) => ({
-          ...prev,
-          currentQuestionIndex: prev.currentQuestionIndex + 1,
-          transcript: "",
-        }));
-        setTranscript("");
-      }
+      await endInterview();
+      router.push("/voice/" + data.interview_id + "/result");
+      toast.success("Interview Complete", {
+        description: "You have completed all questions. Thank you!",
+      });
+      setInterviewState((prev) => ({
+        ...prev,
+        currentQuestionIndex: prev.currentQuestionIndex + 1,
+        transcript: "",
+      }));
+      setTranscript("");
     } catch (error) {
       console.error("Error submitting answer:", error);
       toast.error("Submission Failed", {
@@ -228,6 +223,7 @@ const VoicePage: React.FC<VoicePageProps> = ({ data }) => {
           toggleMute={togglePauseResume}
           micPermission={micPermission}
           toggleMicPermission={toggleMicPermission}
+          submitAnswer={submitAnswer}
         />
       </div>
     </div>

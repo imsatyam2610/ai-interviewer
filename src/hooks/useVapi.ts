@@ -31,95 +31,107 @@ export const useVapi = (options?: UseVapiOptions) => {
       });
   }, []);
 
-  const connect = useCallback(async () => {
-    const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
-    vapiRef.current = vapi;
+  const connect = useCallback(
+    async (company: any) => {
+      const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+      vapiRef.current = vapi;
 
-    const assistantOptions = {
-      name: "AI Interviewer",
-      firstMessage:
-        options?.onFirstMessage ??
-        "Hi, I’m your AI Interviewer. Let’s begin your mock interview!",
-      transcriber: {
-        provider: "deepgram",
-        model: "nova-2",
-        language: "en-US",
-      },
-      voice: {
-        provider: "playht",
-        voiceId: "jennifer",
-      },
-      model: {
-        provider: "openai",
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: `You are a professional AI interviewer.
-- Ask one behavioral or situational question at a time.
-- Wait until the candidate finishes.
-- Don’t interrupt.
-- Respond naturally like "Thank you", then continue.`,
-          },
-        ],
-      },
-    };
+      const assistantOptions = {
+        name: "AI Interviewer",
+        firstMessage:
+          options?.onFirstMessage ??
+          "Hi, I’m your Interviewer today. Let’s begin your mock interview!",
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-2",
+          language: "en-US",
+        },
+        voice: {
+          provider: "playht",
+          voiceId: "jennifer",
+        },
+        model: {
+          provider: "openai",
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: `You're an interviewer at ${company}, conducting a mock technical interview for a Computer Science role.
 
-    vapi.on("call-start", () => {
-      setIsConnected(true);
-      setTranscript("");
+Ask only **technical questions** related to:
+- Data Structures and Algorithms
+- Operating Systems
+- DBMS
+- Computer Networks
+- OOPs
+- System Design (optional)
 
-      if (options?.getCurrentQuestion) {
-        const q = options.getCurrentQuestion();
-        if (q) {
-          vapi.say(q);
+Start with a brief introduction (1-2 HR questions max), and then strictly move to technical questions only. Do not ask general HR questions beyond that.
+
+Ask one question at a time and wait for the candidate's answer. Avoid giving hints or answers yourself.
+`,
+            },
+          ],
+        },
+      };
+
+      vapi.on("call-start", () => {
+        setIsConnected(true);
+        setTranscript("");
+
+        if (options?.getCurrentQuestion) {
+          const q = options.getCurrentQuestion();
+          if (q) {
+            vapi.say(q);
+          }
         }
+      });
+
+      vapi.on("call-end", () => {
+        setIsConnected(false);
+        setTranscript("");
+      });
+
+      vapi.on("message", (msg: any) => {
+        if (msg.type === "transcript" && msg.transcriptType === "final") {
+          const lowerTranscript = msg.transcript.toLowerCase().trim();
+
+          const speaker = msg.role === "assistant" ? "interviewer" : "you";
+          if (msg.role == "user" && msg.transcriptType === "final") {
+            setTranscript((prev) =>
+              prev
+                ? `${prev.trim()} ${msg.transcript.trim()}`
+                : msg.transcript.trim()
+            );
+          }
+          setConversationLog((prev) => [
+            ...prev,
+            { role: speaker, text: msg.transcript },
+          ]);
+          if (
+            lowerTranscript.includes("skip") ||
+            lowerTranscript.includes("skip question") ||
+            lowerTranscript.includes("next question")
+          ) {
+            options?.onSkipQuestion?.();
+            setTranscript("");
+            return;
+          }
+        }
+      });
+
+      vapi.on("speech-start", () => setActiveUser(false));
+      vapi.on("speech-end", () => setActiveUser(true));
+
+      try {
+        //@ts-ignore
+        await vapi.start(assistantOptions);
+      } catch (err) {
+        console.error("❌ Failed to start Vapi:", err);
       }
-    });
-
-    vapi.on("call-end", () => {
-      setIsConnected(false);
-      setTranscript("");
-    });
-
-    vapi.on("message", (msg: any) => {
-      if (msg.type === "transcript" && msg.transcriptType === "final") {
-        const lowerTranscript = msg.transcript.toLowerCase().trim();
-
-        const speaker = msg.role === "assistant" ? "interviewer" : "you";
-        if (msg.role == "user" && msg.transcriptType === "final") {
-          setTranscript((prev) =>
-            prev
-              ? `${prev.trim()} ${msg.transcript.trim()}`
-              : msg.transcript.trim()
-          );
-        }
-        setConversationLog((prev) => [
-          ...prev,
-          { role: speaker, text: msg.transcript },
-        ]);
-        if (
-          lowerTranscript.includes("skip") ||
-          lowerTranscript.includes("skip question") ||
-          lowerTranscript.includes("next question")
-        ) {
-          options?.onSkipQuestion?.();
-          setTranscript("");
-          return;
-        }
-      }
-    });
-
-    vapi.on("speech-start", () => setActiveUser(false));
-    vapi.on("speech-end", () => setActiveUser(true));
-
-    try {
-      //@ts-ignore
-      await vapi.start(assistantOptions);
-    } catch (err) {
-      console.error("❌ Failed to start Vapi:", err);
-    }
-  }, [options?.onFirstMessage, options?.getCurrentQuestion]);
+    },
+    [options?.onFirstMessage, options?.getCurrentQuestion]
+  );
 
   const disconnect = useCallback(async () => {
     if (vapiRef.current) {
